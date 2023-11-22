@@ -1,6 +1,8 @@
 package com.mrdip.dao
 
-import com.mrdip.model.UserRow
+import com.mrdip.dao.follows.FollowsTable
+import com.mrdip.dao.user.UserRow
+import com.mrdip.dao.user.UserTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +15,7 @@ object DatabaseFactory {
     fun init(){
         Database.connect(createHikariDataSource())
         transaction {
-            SchemaUtils.create(UserRow)
+            SchemaUtils.create(UserTable, FollowsTable)
         }
     }
 

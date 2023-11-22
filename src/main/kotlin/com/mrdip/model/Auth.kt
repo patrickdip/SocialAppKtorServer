@@ -23,7 +23,7 @@ data class AuthResponse(
 
 @Serializable
 data class AuthResponseData(
-    val id: Int,
+    val id: Long,
     val name: String,
     val bio: String,
     val avatar: String? = null,

@@ -1,4 +1,4 @@
-package com.mrdip.repository.user
+package com.mrdip.repository.auth
 
 import com.mrdip.dao.user.UserDao
 import com.mrdip.model.AuthResponse
@@ -10,9 +10,9 @@ import com.mrdip.security.hashPassword
 import com.mrdip.util.Response
 import io.ktor.http.*
 
-class UserRepositoryImpl(
+class AuthRepositoryImpl(
     private val userDao: UserDao
-) : UserRepository {
+) : AuthRepository {
 
     override suspend fun signUp(params: SignUpParams): Response<AuthResponse> {
         return if (userAlreadyExist(params.email)) {
@@ -67,7 +67,9 @@ class UserRepositoryImpl(
                             id = user.id,
                             name = user.name,
                             bio = user.bio,
-                            token = generateToken(params.email)
+                            token = generateToken(params.email),
+                            followingCount = user.followingCount,
+                            followersCount = user.followersCount
                         )
                     )
                 )
