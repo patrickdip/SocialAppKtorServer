@@ -14,6 +14,8 @@ import com.mrdip.repository.follows.FollowsRepository
 import com.mrdip.repository.follows.FollowsRepositoryImpl
 import com.mrdip.repository.post.PostRepository
 import com.mrdip.repository.post.PostRepositoryImpl
+import com.mrdip.repository.profile.ProfileRepository
+import com.mrdip.repository.profile.ProfileRepositoryImpl
 import org.koin.dsl.module
 
 val appModule = module {
@@ -24,4 +26,5 @@ val appModule = module {
     single<PostLikesDao> { PostLikesDaoImpl() }
     single<PostDao> { PostDaoImpl()}
     single<PostRepository> { PostRepositoryImpl(get(), get(), get()) }
+    single<ProfileRepository> { ProfileRepositoryImpl(get(), get()) }
 }
