@@ -6,6 +6,7 @@ import com.mrdip.util.IdGenerator
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 
 class PostDaoImpl : PostDao {
     override suspend fun createPost(caption: String, imageUrl: String, userId: Long): Boolean {
@@ -51,6 +52,24 @@ class PostDaoImpl : PostDao {
         return dbQuery {
             getPosts(users = listOf(userId), pageSize = pageSize, pageNumber = pageNumber)
         }
+    }
+
+    override suspend fun updateLikesCount(postId: Long, decrement: Boolean): Boolean {
+        return dbQuery {
+            val value = if (decrement) -1 else 1
+            PostTable.update(where = {PostTable.postId eq postId}){
+                it.update(column = likesCount, value = likesCount.plus(value))
+            } > 0
+        }
+    }
+
+    override suspend fun updateCommentsCount(postId: Long, decrement: Boolean): Boolean {
+        return dbQuery {
+            val value = if (decrement) -1 else 1
+            PostTable.update(where = {PostTable.postId eq postId}){
+                it.update(column = commentsCount, value = commentsCount.plus(value))
+            }
+        } > 0
     }
 
     override suspend fun getPost(postId: Long): PostRow? {

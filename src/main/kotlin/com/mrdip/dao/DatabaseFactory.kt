@@ -2,6 +2,7 @@ package com.mrdip.dao
 
 import com.mrdip.dao.follows.FollowsTable
 import com.mrdip.dao.post.PostTable
+import com.mrdip.dao.post_comments.PostCommentsTable
 import com.mrdip.dao.post_likes.PostLikesTable
 import com.mrdip.dao.user.UserRow
 import com.mrdip.dao.user.UserTable
@@ -17,7 +18,7 @@ object DatabaseFactory {
     fun init(){
         Database.connect(createHikariDataSource())
         transaction {
-            SchemaUtils.create(UserTable, FollowsTable, PostTable, PostLikesTable)
+            SchemaUtils.create(UserTable, FollowsTable, PostTable, PostLikesTable, PostCommentsTable)
         }
     }
 
