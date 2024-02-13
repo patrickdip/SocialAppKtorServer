@@ -14,6 +14,7 @@ fun Application.configureRouting() {
         postRouting()
         profileRouting()
         postCommentsRouting()
+        postLikesRouting()
         static {
             resources("static")
         }

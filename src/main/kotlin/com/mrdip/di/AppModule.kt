@@ -18,6 +18,8 @@ import com.mrdip.repository.post.PostRepository
 import com.mrdip.repository.post.PostRepositoryImpl
 import com.mrdip.repository.post_comments.PostCommentsRepository
 import com.mrdip.repository.post_comments.PostCommentsRepositoryImpl
+import com.mrdip.repository.post_likes.PostLikesRepository
+import com.mrdip.repository.post_likes.PostLikesRepositoryImpl
 import com.mrdip.repository.profile.ProfileRepository
 import com.mrdip.repository.profile.ProfileRepositoryImpl
 import org.koin.dsl.module
@@ -33,4 +35,5 @@ val appModule = module {
     single<ProfileRepository> { ProfileRepositoryImpl(get(), get()) }
     single<PostCommentsDao> { PostCommentsDaoImpl() }
     single<PostCommentsRepository> { PostCommentsRepositoryImpl(get(), get()) }
+    single<PostLikesRepository> { PostLikesRepositoryImpl(get(), get()) }
 }
