@@ -4,11 +4,8 @@ import com.mrdip.dao.DatabaseFactory.dbQuery
 import com.mrdip.model.SignUpParams
 import com.mrdip.security.hashPassword
 import com.mrdip.util.IdGenerator
-import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
 
 class UserDaoImpl : UserDao {
     override suspend fun insert(params: SignUpParams): UserRow? {
@@ -65,6 +62,22 @@ class UserDaoImpl : UserDao {
             } > 0
 
             success1 && success2
+        }
+    }
+
+    override suspend fun getUsers(ids: List<Long>): List<UserRow> {
+        return dbQuery {
+            UserTable.select(where = { UserTable.id inList ids})
+                .map { rowToUser(it) }
+        }
+    }
+
+    override suspend fun getPopularUsers(limit: Int): List<UserRow> {
+        return dbQuery {
+            UserTable.selectAll()
+                .orderBy(column = UserTable.followersCount, order = SortOrder.DESC)
+                .limit(n = limit)
+                .map { rowToUser(it) }
         }
     }
 
