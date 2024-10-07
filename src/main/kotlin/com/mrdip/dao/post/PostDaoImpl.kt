@@ -9,17 +9,29 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 
 class PostDaoImpl : PostDao {
-    override suspend fun createPost(caption: String, imageUrl: String, userId: Long): Boolean {
+    override suspend fun createPost(caption: String, imageUrl: String, userId: Long): PostRow? {
         return dbQuery{
+            val postId = IdGenerator.generateId()
             val insertStatement = PostTable.insert {
-                it[postId] = IdGenerator.generateId()
+                it[PostTable.postId] = postId
                 it[PostTable.caption] = caption
                 it[PostTable.imageUrl] = imageUrl
                 it[likesCount] = 0
                 it[commentsCount] = 0
                 it[PostTable.userId] = userId
             }
-            insertStatement.resultedValues?.singleOrNull() != null
+            insertStatement.resultedValues?.singleOrNull()?.let {
+                PostTable
+                    .join(
+                        otherTable = UserTable,
+                        onColumn = PostTable.userId,
+                        otherColumn = UserTable.id,
+                        joinType = JoinType.INNER
+                    )
+                    .select { PostTable.postId eq postId }
+                    .singleOrNull()
+                    ?.let { toPostRow(it) }
+            }
         }
     }
 

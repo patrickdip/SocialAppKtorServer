@@ -40,7 +40,7 @@ fun Routing.profileRouting(){
                         status = HttpStatusCode.InternalServerError,
                         message = ProfileResponse(
                             success = false,
-                            message = "An unexpected error has occurred, try again!"
+                            message = Constants.UNEXPECTED_ERROR_MESSAGE
                         )
                     )
                 }

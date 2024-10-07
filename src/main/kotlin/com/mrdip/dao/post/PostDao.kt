@@ -1,7 +1,7 @@
 package com.mrdip.dao.post
 
 interface PostDao{
-    suspend fun createPost(caption: String, imageUrl: String, userId: Long): Boolean
+    suspend fun createPost(caption: String, imageUrl: String, userId: Long): PostRow?
 
     suspend fun getFeedsPost(userId: Long, follows: List<Long>, pageNumber: Int, pageSize: Int): List<PostRow>
 

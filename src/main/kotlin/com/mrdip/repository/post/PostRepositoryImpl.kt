@@ -4,7 +4,6 @@ import com.mrdip.dao.follows.FollowsDao
 import com.mrdip.dao.post.PostDao
 import com.mrdip.dao.post.PostRow
 import com.mrdip.dao.post_likes.PostLikesDao
-import com.mrdip.dao.user.UserDao
 import com.mrdip.model.Post
 import com.mrdip.model.PostResponse
 import com.mrdip.model.PostTextParams
@@ -18,17 +17,24 @@ class PostRepositoryImpl(
     private val postLikesDao: PostLikesDao
 ) : PostRepository {
     override suspend fun createPost(imageUrl: String, postTextParams: PostTextParams): Response<PostResponse> {
-        val postIsCreated = postDao.createPost(
+        val postRow = postDao.createPost(
             caption = postTextParams.caption,
             imageUrl = imageUrl,
             userId = postTextParams.userId
         )
 
-        return if (postIsCreated){
+        return if (postRow != null) {
             Response.Success(
-                data = PostResponse(success = true)
+                data = PostResponse(
+                    success = true,
+                    post = toPost(
+                        postRow = postRow,
+                        isPostLiked = false,
+                        isOwnPost = true
+                    )
+                )
             )
-        }else{
+        } else {
             Response.Error(
                 code = HttpStatusCode.InternalServerError,
                 data = PostResponse(
@@ -94,13 +100,13 @@ class PostRepositoryImpl(
     override suspend fun getPost(postId: Long, currentUserId: Long): Response<PostResponse> {
         val post = postDao.getPost(postId = postId)
 
-        return if (post == null){
+        return if (post == null) {
             Response.Error(
                 code = HttpStatusCode.InternalServerError,
                 data = PostResponse(success = false, message = "Could not retrieve post from the database")
             )
-        }else{
-            val isPostLiked = postLikesDao.isPostLikedByUser(postId,currentUserId)
+        } else {
+            val isPostLiked = postLikesDao.isPostLikedByUser(postId, currentUserId)
             val isOwnPost = post.postId == currentUserId
             Response.Success(
                 data = PostResponse(success = true, toPost(post, isPostLiked = isPostLiked, isOwnPost = isOwnPost))
@@ -113,11 +119,11 @@ class PostRepositoryImpl(
             postId = postId
         )
 
-        return if (postIsDeleted){
+        return if (postIsDeleted) {
             Response.Success(
                 data = PostResponse(success = true)
             )
-        }else{
+        } else {
             Response.Error(
                 code = HttpStatusCode.InternalServerError,
                 data = PostResponse(
@@ -128,7 +134,7 @@ class PostRepositoryImpl(
         }
     }
 
-    private fun toPost(postRow: PostRow, isPostLiked: Boolean, isOwnPost: Boolean): Post{
+    private fun toPost(postRow: PostRow, isPostLiked: Boolean, isOwnPost: Boolean): Post {
         return Post(
             postId = postRow.postId,
             caption = postRow.caption,
